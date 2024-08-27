@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.reserve-mapper">
+<!--
+RNO     NOT NULL NUMBER       
+ID               VARCHAR2(20) 
+CNO              NUMBER       
+DAY     NOT NULL VARCHAR2(20) 
+TIME    NOT NULL VARCHAR2(20) 
+INWON   NOT NULL VARCHAR2(20) 
+REGDATE          DATE         
+ISOK             CHAR(1)
+	-->
+	<insert id="FoodReserveInsert" parameterType="FoodReserveVO">
+		INSERT INTO food_reserve(frno,id,fno,day,time,inwon)
+		VALUES(fre_frno_seq.nextval,#{id},#{fno},#{day},#{time},#{inwon})
+	</insert>
+	<resultMap type="com.sist.vo.FoodReserveVO" id="FoodreserveMap">
+		<result property="vo.name" column="name"/>
+		<result property="vo.poster" column="poster"/>
+		<result property="vo.address" column="address"/>
+		<result property="vo.phone" column="phone"/>
+	</resultMap>
+	
+	
+	<select id="FoodReserveMyPageData" resultMap="FoodreserveMap" parameterType="string">
+		SELECT frno,day,time,inwon,name,poster,isok,address,phone
+			,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,fno
+		FROM food_reserve fre,food_blue fb
+		WHERE fre.fno=fb.fno
+		AND id=#{id}
+		ORDER BY frno DESC
+	</select>
+	
+	
+	<!-- 관리자페이지 예약 출력 -->
+	<select id="FoodReserveAdminPageData" resultMap="FoodreserveMap">
+		SELECT frno,fno,id,time,inwon,isok,name,poster,address,phone,
+			TO_CHAR(regdate,'YYYY-MM-DD') as dbday
+		FROM food_reserve fre,food_blue fb
+		WHERE fre.fno=fb.fno
+		ORDER BY frno DESC
+	</select>
+	
+	
+	<select id="FoodReserveTimeData" resultType="String" parameterType="int">
+		SELECT time
+		FROM food_reserve_date
+		WHERE fdno=#{fdno}
+	</select>
+	
+	
+	<select id="FoodTimeSelectData" resultType="String" parameterType="int">
+		SELECT time
+		FROM food_reserve_time
+		WHERE ftno=#{ftno}
+	</select>
+	
+	<!--
+	<select id="FoodReserveDayData" resultType="String" parameterType="int">
+		SELECT rdays
+		FROM food_blue
+		WHERE fno=#{fno}
+	</select>
+	   admin = 승인 -->
+
+
+  <select id="myFoodReserveData" parameterType="int" resultMap="FoodreserveMap">
+  		select poster,name,address , phone,frno,day,time,inwon,TO_CHAR(regdate,'YYYY-MM-DD') as dbday 
+		FROM food_reserve fre,food_blue fb
+		where frno=#{frno} and fb.fno=fre.fno
+  </select>
+  
+  
+  <update id="FoodreserveOk" parameterType="int">
+   UPDATE food_reserve SET
+   isok='y'
+   WHERE frno=#{frno}
+  </update>
+</mapper>
