@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.commons-mapper">
+	<select id="commonsTodayCampsite" resultType="CampVO">
+		SELECT camp_no,image1,camp_name,camp_addr
+		FROM (SELECT camp_no,image1,camp_name,camp_addr
+    	FROM camp
+    	WHERE camp_no>=1
+    	ORDER BY DBMS_RANDOM.VALUE)
+		WHERE ROWNUM=1
+	</select>
+	<select id="commonsTodayFood" resultType="FoodVO">
+		SELECT fno,poster,name,address
+		FROM (SELECT fno,poster,name,address
+		FROM food_house
+		WHERE fno>=1
+		ORDER BY DBMS_RANDOM.VALUE)
+		WHERE ROWNUM=1
+	</select>
+	<select id="commonsTodayRecipe" resultType="RecipeVO">
+		SELECT no,poster,title
+		FROM (SELECT no,poster,title
+		FROM recipe
+		WHERE no>=1
+		ORDER BY DBMS_RANDOM.VALUE)
+		WHERE ROWNUM=1
+	</select>
+</mapper>

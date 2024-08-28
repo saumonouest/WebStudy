@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.recipe-mapper">
+	<select id="recipeHitTopData" resultType="RecipeVO">
+		SELECT no , title , poster , rownum 
+		FROM (SELECT no , title , poster 
+				  FROM recipe ORDER BY hit DESC )
+		WHERE rownum &lt;=12
+	</select> 
+	<select id="recipeLikeTopData" resultType="RecipeVO">
+		SELECT no, poster, title,info1, info2, info3, hit, subtitle, rownum 
+		FROM (SELECT no, poster, title, info1, info2, info3, hit, subtitle
+		FROM recipe ORDER BY likecount DESC )
+		WHERE rownum &lt;=9
+	</select>
+	<select id="recipeJjimTopData" resultType="RecipeVO">
+		SELECT no , title , poster , rownum 
+		FROM (SELECT no , title , poster 
+				  FROM recipe ORDER BY jjimcount DESC )
+		WHERE rownum &lt;=12
+	</select>
+	
+	
+	<!-- 
+no             NOT NULL NUMBER         
+POSTER           NOT NULL VARCHAR2(4000) 
+TITLE            NOT NULL VARCHAR2(200)  
+SUBTITLE         NOT NULL VARCHAR2(1024) 
+DETAIL_POSTER1            VARCHAR2(260)  
+DETAIL_CONTENT1           VARCHAR2(1024) 
+DETAIL_POSTER2            VARCHAR2(260)  
+DETAIL_CONTENT2           VARCHAR2(1024) 
+DETAIL_POSTER3            VARCHAR2(260)  
+DETAIL_CONTENT3           VARCHAR2(1024) 
+DETAIL_POSTER4            VARCHAR2(260)  
+DETAIL_CONTENT4           VARCHAR2(1024) 
+DETAIL_POSTER5            VARCHAR2(260)  
+DETAIL_CONTENT5           VARCHAR2(1024) 
+DETAIL_POSTER6            VARCHAR2(260)  
+DETAIL_CONTENT6           VARCHAR2(1024) 
+DETAIL_POSTER7            VARCHAR2(260)  
+DETAIL_CONTENT7           VARCHAR2(1024) 
+DETAIL_POSTER8            VARCHAR2(260)  
+DETAIL_CONTENT8           VARCHAR2(1024) 
+DETAIL_POSTER9            VARCHAR2(260)  
+DETAIL_CONTENT9           VARCHAR2(1024) 
+DETAIL_POSTER10           VARCHAR2(260)  
+DETAIL_CONTENT10          VARCHAR2(1024) 
+INFO1            NOT NULL VARCHAR2(30)   
+INFO2            NOT NULL VARCHAR2(30)   
+INFO3            NOT NULL VARCHAR2(30)   
+INGREDIENTS      NOT NULL VARCHAR2(4000) 
+HIT                       VARCHAR2(20)   
+LIKECOUNT                 VARCHAR2(20)   
+JJIMCOUNT                 VARCHAR2(20)   
+ -->
+	
+	
+  <select id="recipeListCount" resultType="int">
+    SELECT COUNT(*) FROM recipe
+  </select>
+  <!-- 맛집 목록 출력 -->
+  <select id="recipeListData" resultType="RecipeVO" parameterType="hashmap">
+    SELECT no,title,poster, info3,hit, num
+    FROM (SELECT no,title,poster, info3,hit, rownum as num 
+    FROM (SELECT no,title,poster, info3,hit
+    FROM recipe))
+    WHERE num BETWEEN #{start} AND #{end}
+  </select>
+  <select id="recipeTotalPage" resultType="int">
+    SELECT CEIL(COUNT(*)/20.0) FROM recipe
+  </select>
+  <!-- 맛집 상세보기 -->
+  <update id="recipeHitIncrement" parameterType="int">
+    UPDATE recipe SET
+    hit=hit+1
+    WHERE no=#{no}
+  </update>
+ 
+  <select id="recipeDetailData" resultType="RecipeVO" parameterType="int">
+    SELECT no,poster, title, subtitle, detail_poster1, detail_content1,detail_poster2, detail_content2,detail_poster3, detail_content3,detail_poster4, detail_content4,detail_poster5, detail_content5,detail_poster6, detail_content6,detail_poster7, detail_content7,detail_poster8, detail_content8,detail_poster9, detail_content9,detail_poster10, detail_content10, info1, info2, info3, ingredients FROM recipe
+    WHERE no=#{no}
+  </select>
+
+
+
+<select id="sameRecipeData" resultType="RecipeVO" parameterType="string">
+		SELECT no, poster, title, subtitle, detail_poster1, detail_content1,detail_poster2, detail_content2,detail_poster3, detail_content3,detail_poster4, detail_content4,detail_poster5, detail_content5,detail_poster6, detail_content6,detail_poster7, detail_content7,detail_poster8, detail_content8,detail_poster9, detail_content9,detail_poster10, detail_content10, info1, info2, info3, ingredients, hit, rownum 
+		FROM (SELECT no ,poster, title, subtitle, detail_poster1, detail_content1,detail_poster2, detail_content2,detail_poster3, detail_content3,detail_poster4, detail_content4,detail_poster5, detail_content5,detail_poster6, detail_content6,detail_poster7, detail_content7,detail_poster8, detail_content8,detail_poster9, detail_content9,detail_poster10, detail_content10, info1, info2, info3, ingredients, hit
+				  FROM recipe WHERE info3 LIKE '%'||#{ress}||'%'  ORDER BY no ASC)
+		WHERE rownum &lt;=12
+	</select>
+	<!--  맛집 찾기 -->
+	<select id="recipeFindListData" resultType="RecipeVO" parameterType="hashmap">
+		SELECT no , title , poster , num
+		FROM (SELECT no , title , poster , rownum as num 
+		FROM (SELECT /*+ INDEX_ASC(recipe REC_NO_PK)*/ no , title, poster 
+		FROM recipe WHERE info3 LIKE '%'||#{ress}||'%'))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	<select id="recipeFindTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/20.0)  
+		FROM recipe
+		WHERE title LIKE '%'||#{ress}||'%' 
+	</select>
+  
+</mapper>

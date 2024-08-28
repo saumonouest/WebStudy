@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.campGoods-mapper">
+    <!-- 메인페이지 캠핑용품 -->
+    <select id="campGoodsJjimTopData" resultType="CampGoodsVO">
+        SELECT cno,poster,name,price,jjimcount,type1,rownum
+        FROM (SELECT cno,poster,name,price,jjimcount,type1
+              FROM camp_goods_all ORDER BY jjimcount DESC)
+        WHERE rownum&lt;=12
+    </select>
+
+    <select id="campGoodsAllListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+    SELECT cno, name, price, poster, type1, num
+    FROM (SELECT cno, name, price, poster, type1, rownum as num
+          FROM (SELECT cno, name, price, poster, type1
+                FROM ${table_name} ORDER BY cno ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select>
+    <select id="campGoodsAirListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+    SELECT cno, name, price, poster, type1, num
+    FROM (SELECT cno, name, price, poster, type1, rownum as num
+          FROM (SELECT cno, name, price, poster, type1
+                FROM ${table_name} WHERE type1=1 ORDER BY cno ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select>
+    <select id="campGoodsTentListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+    SELECT cno, name, price, poster, type1, num
+    FROM (SELECT cno, name, price, poster, type1, rownum as num
+          FROM (SELECT cno, name, price, poster, type1
+                FROM ${table_name} WHERE type1=2 ORDER BY cno ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select>
+    <select id="campGoodsClimbListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+    SELECT cno, name, price, poster, type1, num
+    FROM (SELECT cno, name, price, poster, type1, rownum as num
+          FROM (SELECT cno, name, price, poster, type1
+                FROM ${table_name} WHERE type1=3 ORDER BY cno ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select>
+    <select id="campGoodsChairListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+    SELECT cno, name, price, poster, type1, num
+    FROM (SELECT cno, name, price, poster, type1, rownum as num
+          FROM (SELECT cno, name, price, poster, type1
+                FROM ${table_name} WHERE type1=4 ORDER BY cno ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select>
+    <select id="campGoodsBarbecueListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+    SELECT cno, name, price, poster, type1, num
+    FROM (SELECT cno, name, price, poster, type1, rownum as num
+          FROM (SELECT cno, name, price, poster, type1
+                FROM ${table_name} WHERE type1=5 ORDER BY cno ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select>
+    <select id="campGoodsLanternListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+    SELECT cno, name, price, poster, type1, num
+    FROM (SELECT cno, name, price, poster, type1, rownum as num
+          FROM (SELECT cno, name, price, poster, type1
+                FROM ${table_name} WHERE type1=6 ORDER BY cno ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select>
+
+    <select id="campGoodsTotalPage" resultType="int" parameterType="java.util.Map">
+        SELECT CEIL(COUNT(*) / 20.0) FROM ${table_name}
+    </select>
+
+    <update id="campGoodsHitIncrement" parameterType="java.util.Map">
+        UPDATE ${table_name} 
+        SET hit = hit + 1 
+        WHERE cno = #{cno}
+    </update>
+
+    <!-- 캠핑용품 브랜드 목록 출력 -->
+    <select id="campGoodsBrandListData" resultType="CampGoodsVO" parameterType="java.util.Map">
+        SELECT cno, name, price, poster, num
+        FROM (SELECT cno, name, price, poster, rownum AS num
+              FROM (SELECT cno, name, price, poster
+                    FROM ${table_name} ORDER BY cno ASC))
+        WHERE num BETWEEN #{start} AND #{end}
+    </select>
+    <select id="campGoodsBrandTotalPage" resultType="int" parameterType="java.util.Map">
+        SELECT CEIL(COUNT(*) / 20.0) FROM ${table_name}
+    </select>
+    <!-- 브랜드 찾기 -->
+    <select id="goodsFindListData" resultType="CampGoodsVO" parameterType="map">
+    SELECT cno, name, price, poster, num
+    FROM (SELECT cno, name, price, poster, rownum AS num
+    FROM (SELECT /*+ INDEX_ASC(camp_goods_all cg_cno_pk) */ cno, name, price, poster
+    FROM camp_goods_all
+    WHERE brand LIKE '%' || #{ss} || '%'))
+    WHERE num BETWEEN #{start} AND #{end}
+    </select> 
+    <select id="goodsFindTotalPage" resultType="int">
+    SELECT CEIL(COUNT(*) / 20.0)
+    FROM camp_goods_all
+    WHERE brand LIKE '%' || #{ss} || '%'
+    </select>
+    <!-- 브랜드 목록 -->
+    <select id="getBrandList" resultType="String">
+    SELECT DISTINCT brand FROM camp_goods_all
+    ORDER BY brand
+    </select>
+    
+    <!-- 캠핑용품 상세페이지 -->
+    <select id="campGoodsDetailData" parameterType="java.util.Map" resultType="CampGoodsVO">
+        SELECT * FROM ${table_name} 
+        WHERE cno = #{cno}
+    </select>
+
+    <!-- 캠핑용품 상세페이지 추천 상품 -->
+    <select id="campGoodsRecListData" resultType="CampGoodsVO" parameterType="string">
+        SELECT cno,poster,name,price,jjimcount,type1,rownum
+        FROM (SELECT cno,poster,name,price,jjimcount,type1
+              FROM camp_goods_all ORDER BY jjimcount DESC)
+        WHERE rownum&lt;=12
+    </select>
+</mapper>
