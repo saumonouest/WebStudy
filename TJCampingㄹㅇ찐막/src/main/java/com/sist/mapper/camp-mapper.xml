@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ CAMP_NO                                   NOT NULL NUMBER
+ CAMP_PRICE                                         NUMBER
+ CAMP_NAME                                 NOT NULL VARCHAR2(4000)
+ CAMP_ADDR                                          VARCHAR2(4000)
+ CAMP_PHONE                                         VARCHAR2(4000)
+ CAMP_CONTENT                                       CLOB
+ CAMP_IMAGE                                         VARCHAR2(4000)
+ CAMP_WIFI                                          VARCHAR2(4000)
+ CAMP_STORE                                         VARCHAR2(4000)
+ CAMP_ANIMAL                                        VARCHAR2(4000)
+-->
+<mapper namespace="com.sist.mapper.camp-mapper">
+	<select id="campListData" resultType="CampVO" parameterType="hashmap">
+		SELECT camp_no,camp_name,image1,num
+		FROM (SELECT camp_no,camp_name,image1,rownum as num
+		FROM (SELECT camp_no,camp_name,image1
+		FROM camp
+		ORDER BY camp_no ASC))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	<select id="campTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/12.0)
+		FROM camp
+	</select>
+<!--	<select id="campDetailData" resultType="CampVO" parameterType="int">
+ 	SELECT no,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit
+		FROM board
+		WHERE no=#{no}
+	</select> -->
+	<select id="campDetailData" resultType="CampVO" parameterType="int">
+		SELECT camp_no,camp_price,camp_name,camp_addr,camp_phone,
+		  camp_content,camp_wifi,camp_store,camp_animal,
+		  image1,image2,image3,image4,image5,image6,image7,image8,
+		  image1s,image2s,image3s,image4s,image5s,image6s,image7s,image8s
+		FROM camp
+		WHERE camp_no=#{camp_no}
+	</select>
+	<select id="campNoTopData" resultType="CampVO">
+		SELECT camp_no,camp_name,camp_price,image1,rownum
+		FROM (SELECT camp_no,camp_name,camp_price,image1
+		FROM camp ORDER BY camp_no DESC)
+		WHERE rownum&lt;=12
+	</select>
+	<select id="campNearListData" resultType="CampVO" parameterType="string">
+		SELECT camp_no,camp_name,image1,camp_addr,camp_price,rownum
+		FROM (SELECT camp_no,camp_name,image1,camp_addr,camp_price
+		FROM camp
+		WHERE camp_addr LIKE '%'||#{ss}||'%'
+		ORDER BY camp_no ASC)
+		WHERE rownum&lt;=6
+	</select>
+	<select id="campFindData" resultType="CampVO" parameterType="hashmap">
+		SELECT camp_no,camp_name,image1,num
+		FROM (SELECT camp_no,camp_name,image1,rownum as num
+		FROM (SELECT camp_no,camp_name,image1
+		FROM camp
+		WHERE camp_addr LIKE '%'||#{a}||'%'))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	<!--
+	<select id="campFindTotalPage" resultType="int" parameterType="string">
+		SELECT CEIL(COUNT(*)/12.0)
+		FROM camp
+		WHERE camp_addr LIKE '%'||#{a}||'%'
+	</select>
+	-->
+	<select id="campPetData" resultType="CampVO" parameterType="hashmap">
+		SELECT camp_no,camp_name,image1,num
+		FROM (SELECT camp_no,camp_name,image1,rownum as num
+		FROM (SELECT camp_no,camp_name,image1
+		FROM camp
+		WHERE camp_animal='y'
+		ORDER BY camp_no ASC))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	<select id="campPetTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/12.0)
+		FROM camp
+		WHERE camp_animal='y'
+	</select>
+	<select id="campReserveData" resultType="CampVO" parameterType="int">
+		SELECT camp_no,camp_name,image1,camp_phone,camp_price,camp_addr
+		FROM camp
+		WHERE camp_no=#{camp_no}
+	</select>
+	<select id="campReserveDayData1" resultType="String" parameterType="int">
+    SELECT rdays FROM camp
+    WHERE camp_no=#{camp_no}
+  </select>
+  <select id="campReserveTimeData1" resultType="String" parameterType="int">
+  	SELECT time FROM reserve_date
+  	WHERE dno=#{dno}
+  </select>
+  <select id="campTimeSelectData1" resultType="String" parameterType="int">
+  	SELECT time FROM reserve_time
+  	WHERE tno=#{tno}
+  </select>
+  <select id="campSearchData" resultType="CampVO" parameterType="map">
+    SELECT camp_no, camp_name, image1
+    FROM camp
+    WHERE
+    <trim prefix="" suffix="" prefixOverrides="OR">
+        <foreach collection="fsArr" item="fs" separator="OR">
+            <choose>
+                <when test="fs == 'N'">
+                    camp_name LIKE '%'||#{ss}||'%'
+                </when>
+                <when test="fs == 'P'">
+                    camp_price LIKE '%'||#{ss}||'%'
+                </when>
+            </choose>
+        </foreach>
+    </trim>
+    <if test="start != null and end != null">
+        AND num BETWEEN #{start} AND #{end}
+    </if>
+	</select>
+	<select id="campSearchTotalPage" resultType="int" parameterType="map">
+		SELECT CEIL(COUNT(*)/12.0)
+		FROM camp
+		WHERE
+	<trim prefix="" suffix="" prefixOverrides="OR">
+        <foreach collection="fsArr" item="fs" separator="OR">
+            <choose>
+                <when test="fs == 'N'">
+                    camp_name LIKE '%'||#{ss}||'%'
+                </when>
+                <when test="fs == 'P'">
+                    camp_price LIKE '%'||#{ss}||'%'
+                </when>
+            </choose>
+        </foreach>
+    </trim>
+    <if test="start != null and end != null">
+        AND num BETWEEN #{start} AND #{end}
+    </if>
+	</select>
+</mapper>

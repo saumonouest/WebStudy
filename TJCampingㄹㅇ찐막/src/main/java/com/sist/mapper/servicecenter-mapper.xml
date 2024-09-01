@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.notice-mapper">
+	<!--  공지사항 올리기 : admin -->
+	<insert id="campInsert" parameterType="ServiceVO">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(no)+1,1) as no FROM servicecenter
+		</selectKey>
+		INSERT INTO notice(no,type,subject,content)
+		VALUES (#{no},#{type},#{subject},#{content})
+	</insert>
+	
+	
+	<!--  공지목록 출력 : admin/user -->
+	<select id="campBoardListData" resultType="ServiceVO" parameterType="hashmap">
+		SELECT no,type,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday , hit , num
+		FROM (SELECT no,type,subject,name,regdate , hit ,rownum as num 
+				  FROM (SELECT no,type,subject,name,regdate, hit 
+				  		    FROM servicecenter ORDER BY no DESC )) 
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	
+	
+	<select id="campRowCount" resultType="int">
+		SELECT COUNT(*) FROM servicecenter
+	</select>
+	<!--  공지 상세보기 : user -->
+	<update id="campHitIncrement" parameterType="int">
+		UPDATE servicecenter SET 
+		hit = hit+1
+		WHERE no=#{no}
+	</update>
+	<!--  공지 수정 : admin-->
+	<select id="campUpdateData" resultType="ServiceVO" parameterType="int">
+		SELECT no,type,hit,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday  FROM servicecenter
+		WHERE no=#{no}
+	</select>
+	<update id="campUpdate" parameterType="ServiceVO">
+		UPDATE servicecenter SET
+		type=#{type} , subject=#{subject},content=#{content}
+		WHERE no=#{no}
+	</update>
+	<!--  공지 삭제 : admin -->
+	<delete id="campDelete" parameterType="int">
+		DELETE FROM servicecenter
+		WHERE no=#{no}
+	</delete>
+	
+	<select id="campTop5Data" resultType="ServiceVO" >
+		SELECT no,type,subject,rownum
+		FROM (SELECT no,type,subject 
+				  FROM servicecenter ORDER BY hit DESC)
+		WHERE rownum&lt;=5
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<insert id="goodsInsert" parameterType="ServiceVO">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(no)+1,1) as no FROM servicegoods
+		</selectKey>
+		INSERT INTO notice(no,type,subject,content)
+		VALUES (#{no},#{type},#{subject},#{content})
+	</insert>
+	
+	
+	<!--  공지목록 출력 : admin/user -->
+	<select id="goodsBoardListData" resultType="ServiceVO" parameterType="hashmap">
+		SELECT no,type,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday , hit , num
+		FROM (SELECT no,type,subject,name,regdate , hit ,rownum as num 
+				  FROM (SELECT no,type,subject,name,regdate, hit 
+				  		    FROM servicegoods ORDER BY no DESC )) 
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	
+	
+	<select id="goodsRowCount" resultType="int">
+		SELECT COUNT(*) FROM servicegoods
+	</select>
+	<!--  공지 상세보기 : user -->
+	<update id="goodsbHitIncrement" parameterType="int">
+		UPDATE servicegoods SET 
+		hit = hit+1
+		WHERE no=#{no}
+	</update>
+	<!--  공지 수정 : admin-->
+	<select id="goodsUpdateData" resultType="ServiceVO" parameterType="int">
+		SELECT no,type,hit,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday  FROM servicegoods
+		WHERE no=#{no}
+	</select>
+	<update id="goodsUpdate" parameterType="ServiceVO">
+		UPDATE servicegoods SET
+		type=#{type} , subject=#{subject},content=#{content}
+		WHERE no=#{no}
+	</update>
+	<!--  공지 삭제 : admin -->
+	<delete id="goodsDelete" parameterType="int">
+		DELETE FROM servicegoods
+		WHERE no=#{no}
+	</delete>
+	
+	<select id="goodsTop5Data" resultType="ServiceVO" >
+		SELECT no,type,subject,rownum
+		FROM (SELECT no,type,subject 
+				  FROM servicegoods ORDER BY hit DESC)
+		WHERE rownum&lt;=5
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<insert id="recipeInsert" parameterType="ServiceVO">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(no)+1,1) as no FROM servicerecipe
+		</selectKey>
+		INSERT INTO notice(no,type,subject,content)
+		VALUES (#{no},#{type},#{subject},#{content})
+	</insert>
+	
+	
+	<!--  공지목록 출력 : admin/user -->
+	<select id="recipeBoardListData" resultType="ServiceVO" parameterType="hashmap">
+		SELECT no,type,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday , hit , num
+		FROM (SELECT no,type,subject,name,regdate , hit ,rownum as num 
+				  FROM (SELECT no,type,subject,name,regdate, hit 
+				  		    FROM servicerecipe ORDER BY no DESC )) 
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	
+	
+	<select id="recipeRowCount" resultType="int">
+		SELECT COUNT(*) FROM servicerecipe
+	</select>
+	<!--  공지 상세보기 : user -->
+	<update id="recipebHitIncrement" parameterType="int">
+		UPDATE servicerecipe SET 
+		hit = hit+1
+		WHERE no=#{no}
+	</update>
+	<!--  공지 수정 : admin-->
+	<select id="recipeUpdateData" resultType="ServiceVO" parameterType="int">
+		SELECT no,type,hit,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday  FROM servicerecipe
+		WHERE no=#{no}
+	</select>
+	<update id="recipeUpdate" parameterType="ServiceVO">
+		UPDATE servicerecipe SET
+		type=#{type} , subject=#{subject},content=#{content}
+		WHERE no=#{no}
+	</update>
+	<!--  공지 삭제 : admin -->
+	<delete id="recipeDelete" parameterType="int">
+		DELETE FROM servicerecipe
+		WHERE no=#{no}
+	</delete>
+	
+	<select id="recipeTop5Data" resultType="ServiceVO" >
+		SELECT no,type,subject,rownum
+		FROM (SELECT no,type,subject 
+				  FROM servicerecipe ORDER BY hit DESC)
+		WHERE rownum&lt;=5
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<insert id="foodInsert" parameterType="ServiceVO">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(no)+1,1) as no FROM servicefood
+		</selectKey>
+		INSERT INTO notice(no,type,subject,content)
+		VALUES (#{no},#{type},#{subject},#{content})
+	</insert>
+	
+	
+	<!--  공지목록 출력 : admin/user -->
+	<select id="foodBoardListData" resultType="ServiceVO" parameterType="hashmap">
+		SELECT no,type,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday , hit , num
+		FROM (SELECT no,type,subject,name,regdate , hit ,rownum as num 
+				  FROM (SELECT no,type,subject,name,regdate, hit 
+				  		    FROM servicefood ORDER BY no DESC )) 
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	
+	
+	<select id="foodRowCount" resultType="int">
+		SELECT COUNT(*) FROM servicefood
+	</select>
+	<!--  공지 상세보기 : user -->
+	<update id="foodbHitIncrement" parameterType="int">
+		UPDATE servicefood SET 
+		hit = hit+1
+		WHERE no=#{no}
+	</update>
+	<!--  공지 수정 : admin-->
+	<select id="foodUpdateData" resultType="ServiceVO" parameterType="int">
+		SELECT no,type,hit,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday  FROM servicefood
+		WHERE no=#{no}
+	</select>
+	<update id="foodUpdate" parameterType="ServiceVO">
+		UPDATE servicefood SET
+		type=#{type} , subject=#{subject},content=#{content}
+		WHERE no=#{no}
+	</update>
+	<!--  공지 삭제 : admin -->
+	<delete id="foodDelete" parameterType="int">
+		DELETE FROM servicefood
+		WHERE no=#{no}
+	</delete>
+	
+	<select id="foodTop5Data" resultType="ServiceVO" >
+		SELECT no,type,subject,rownum
+		FROM (SELECT no,type,subject 
+				  FROM servicefood ORDER BY hit DESC)
+		WHERE rownum&lt;=5
+	</select>
+</mapper>

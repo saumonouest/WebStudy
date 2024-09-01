@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.reserve-mapper">
+<!--
+RNO     NOT NULL NUMBER       
+ID               VARCHAR2(20) 
+CNO              NUMBER       
+DAY     NOT NULL VARCHAR2(20) 
+TIME    NOT NULL VARCHAR2(20) 
+INWON   NOT NULL VARCHAR2(20) 
+REGDATE          DATE         
+ISOK             CHAR(1)
+	-->
+	<insert id="campReserveInsert" parameterType="ReserveVO">
+		INSERT INTO reserve(rno,id,cno,day,time,inwon)
+		VALUES(re_rno_seq.nextval,#{id},#{cno},#{day},#{time},#{inwon})
+	</insert>
+	<resultMap type="com.sist.vo.ReserveVO" id="reserveMap">
+		<result property="cvo.camp_name" column="camp_name"/>
+		<result property="cvo.image1" column="image1"/>
+		<result property="cvo.camp_addr" column="camp_addr"/>
+		<result property="cvo.camp_phone" column="camp_phone"/>
+		<result property="cvo.camp_price" column="camp_price"/>
+	</resultMap>
+	<select id="campReserveMyPageData" resultMap="reserveMap" parameterType="string">
+		SELECT rno,day,time,inwon,camp_name,image1,isok,camp_price,camp_addr,camp_phone
+			,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,cno,buyok
+		FROM reserve re,camp ca
+		WHERE re.cno=ca.camp_no
+		AND id=#{id}
+		ORDER BY rno DESC
+	</select>
+	<!-- 관리자페이지 예약 출력 -->
+	<select id="campReserveAdminPageData" resultMap="reserveMap">
+		SELECT rno,cno,id,time,inwon,isok,camp_name,image1,camp_addr,camp_phone,
+			camp_price,TO_CHAR(regdate,'YYYY-MM-DD') as dbday
+		FROM reserve re,camp ca
+		WHERE re.cno=ca.camp_no
+		ORDER BY rno DESC
+	</select>
+	<select id="campReserveDayData" resultType="String" parameterType="int">
+		SELECT rdays
+		FROM camp
+		WHERE camp_no=#{camp_no}
+	</select>
+	<select id="campReserveTimeData" resultType="String" parameterType="int">
+		SELECT time
+		FROM reserve_date
+		WHERE dno=#{dno}
+	</select>
+	<select id="campTimeSelectData" resultType="String" parameterType="int">
+		SELECT time
+		FROM reserve_time
+		WHERE tno=#{tno}
+	</select>
+	  <!-- admin = 승인 -->
+  <update id="reserveOk" parameterType="int">
+   UPDATE reserve SET
+   isok='y'
+   WHERE rno=#{rno}
+  </update>
+
+    <!-- mypage = 취소 -->
+  <delete id="reserveCancel" parameterType="int">
+   DELETE FROM reserve
+   WHERE rno=#{rno}
+  </delete>
+  <select id="myReserveData" parameterType="int" resultMap="reserveMap">
+  		select image1,camp_name,camp_addr,camp_phone,camp_price,rno,day,time,inwon,TO_CHAR(regdate,'YYYY-MM-DD') as dbday 
+		from camp ca , reserve re 
+		where rno=#{rno} and ca.camp_no=re.cno
+  </select>
+  <update id="resbuyOK" parameterType="ReserveVO">
+  	update reserve set
+  	buyok='y'
+  	where isok='y' and id=#{id} and cno=#{cno}
+  </update>
+</mapper>

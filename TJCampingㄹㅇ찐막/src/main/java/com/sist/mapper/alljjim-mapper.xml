@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sist.mapper.alljjim-mapper">
+
+	<insert id="allJjimInsert" parameterType="hashmap">
+
+		INSERT INTO all_jjim
+		VALUES(
+
+		(SELECT NVL(MAX(jno)+1,1) FROM all_jjim) ,
+
+		#{cno} ,#{type} , #{id} ,SYSDATE
+
+		)
+
+	</insert>
+
+	<select id="allJjimCheck" resultType="int"
+		parameterType="hashmap">
+
+		SELECT COUNT(*) FROM all_jjim
+
+		WHERE cno=#{cno} AND
+		type=#{type} AND id=#{id}
+
+	</select>
+
+	<update id="JjimCountIncrement" parameterType="java.util.Map">
+
+		UPDATE food_blue
+		SET
+
+		jjimcount=(SELECT COUNT(*) FROM all_jjim WHERE type=#{type} AND cno=#{cno})
+
+		WHERE
+		fno=#{cno}
+
+	</update>
+	
+
+	<update id="foodJjimCountIncrement"
+		parameterType="java.util.Map">
+
+		UPDATE food_blue SET
+
+		jjimcount=(SELECT COUNT(*) FROM all_jjim WHERE type=#{type} AND cno=#{cno})
+
+		WHERE
+		fno=#{cno}
+
+	</update>
+	
+
+	<update id="campGoodsJjimCountIncrement"
+		parameterType="java.util.Map">
+
+		UPDATE camp_goods_all SET
+
+		jjimcount=(SELECT COUNT(*) FROM all_jjim WHERE type=#{type} AND cno=#{cno})
+
+		WHERE
+		cno=#{cno}
+
+	</update>
+
+
+	<update id="recipeJjimCountIncrement"
+		parameterType="java.util.Map">
+
+		UPDATE recipe SET
+
+		jjimcount=(SELECT COUNT(*) FROM all_jjim WHERE type=#{type} AND cno=#{cno})
+
+		WHERE
+		no=#{cno}
+
+	</update>
+	<!-- 맛집 찜목록 -->
+	<select id="fbJjimListData" resultType="FoodVO"
+		parameterType="string">
+		SELECT fb.fno , poster , name ,aj.type
+		FROM food_blue fb , all_jjim aj
+		WHERE fb.fno=aj.cno AND aj.type LIKE 1 and aj.id=#{id}
+	</select>
+	
+	
+	<!-- 캠핑용품 찜목록 -->
+	<select id="cgjjimListData" resultType="CampGoodsVO"
+		parameterType="hashmap">
+		select ca.cno,poster,name , aj.type
+		from CAMP_GOODS_ALL ca , ALL_JJIM aj
+		where ca.cno = aj.cno and aj.type = 2 and aj.id=#{id}
+	</select>
+	<!-- 레시피 찜목록 -->
+	<select id="recjjimListData" resultType="RecipeVO"
+		parameterType="hashmap">
+		select no,poster,title ,aj.type
+		from recipe p , all_jjim aj
+		where p.no=aj.cno and aj.type like 3 and aj.id=#{id}
+	</select>
+	<!-- delete from all_jjim where id='jung' and cno=1; UPDATE camp_goods_all 
+		SET jjimcount=jjimcount-1 WHERE cno=1; -->
+
+	<delete id="jjim_delete" parameterType="hashmap">
+		delete from all_jjim
+		where id=#{id} and cno=#{cno} and type=#{type}
+	</delete>
+
+	<update id="camp_jjimcount_minus" parameterType="hashmap">
+		UPDATE camp_goods_all
+		SET jjimcount=jjimcount-1
+		WHERE camp_goods_all.cno=#{cno}
+	</update>
+	<select id="fjjimcount" resultType="int" parameterType="string">
+		select count(*) from all_jjim where id=#{id} and type=1
+	</select>
+	<select id="cgjjimcount" resultType="int" parameterType="string">
+		select count(*) from all_jjim where id=#{id} and type=2
+	</select>
+	<select id="rjjimcount" resultType="int" parameterType="string">
+		select count(*) from all_jjim where id=#{id} and type=3
+	</select>
+</mapper>

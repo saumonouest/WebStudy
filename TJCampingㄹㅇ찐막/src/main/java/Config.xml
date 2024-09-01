@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="db.properties"/>
+	<!-- properties : 파일 읽기 : VO를 등록하여 MyBatis에서 값을 저장 -->
+	<typeAliases>
+	<!-- typeAliases : connection 관련 : getConnection / disConnection -->
+	<typeAlias type="com.sist.vo.CampVO" alias="CampVO"/>
+	<typeAlias type="com.sist.vo.MemberVO" alias="MemberVO"/>
+	<typeAlias type="com.sist.vo.CampGoodsVO" alias="CampGoodsVO"/>
+	<typeAlias type="com.sist.vo.FoodVO" alias="FoodVO"/>
+	<typeAlias type="com.sist.vo.RecipeVO" alias="RecipeVO"/>
+	<typeAlias type="com.sist.vo.AllJjimVO" alias="AllJjimVO"/>
+	<typeAlias type="com.sist.vo.BoardVO" alias="BoardVO"/>
+	<typeAlias type="com.sist.vo.ReplyBoardVO" alias="ReplyBoardVO"/>
+	<typeAlias type="com.sist.vo.BoardReplyVO" alias="BoardReplyVO"/>
+	<typeAlias type="com.sist.vo.NoticeVO" alias="NoticeVO"/>
+	<typeAlias type="com.sist.vo.ReserveVO" alias="ReserveVO"/>
+	<typeAlias type="com.sist.vo.RecipeVO" alias="RecipeVO"/>
+	<typeAlias type="com.sist.vo.CartVO" alias="CartVO"/>
+	<typeAlias type="com.sist.vo.ServiceVO" alias="ServiceVO"/>
+	<typeAlias type="com.sist.vo.FoodReserveVO" alias="FoodReserveVO"/>
+	
+	</typeAliases>
+	<environments default="development">
+	<!-- environments : 환경 설정 관련 -->
+		<environment id="development">
+			<transactionManager type="JDBC"/>
+			<!-- transactionManager : COMMIT / ROLLBACK 관련 -->
+			<dataSource type="POOLED">
+			<!-- dataSource : DBCP : maxActive : 8 / maxIdle : 8 -->
+				<property name="driver" value="oracle.jdbc.OracleDriver"/>
+				<property name="url" value="${url}"/>
+				<property name="username" value="${username}"/>
+				<property name="password" value="${password}"/>
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="com/sist/mapper/camp-mapper.xml"/>
+		<mapper resource="com/sist/mapper/member-mapper.xml"/>
+		<mapper resource="com/sist/mapper/campgoods-mapper.xml"/>
+		<mapper resource="com/sist/mapper/food-mapper.xml"/>
+		<mapper resource="com/sist/mapper/recipe-mapper.xml"/>
+		<mapper resource="com/sist/mapper/alljjim-mapper.xml"/>
+		<mapper resource="com/sist/mapper/boardreply-mapper.xml"/>
+		<mapper resource="com/sist/mapper/notice-mapper.xml"/>
+		<mapper resource="com/sist/mapper/admin-mapper.xml"/>
+		<mapper resource="com/sist/mapper/board-mapper.xml"/>
+		<mapper resource="com/sist/mapper/replyboard-mapper.xml"/>
+		<mapper resource="com/sist/mapper/reserve-mapper.xml"/>
+		<mapper resource="com/sist/mapper/recipe-mapper.xml"/>
+		<mapper resource="com/sist/mapper/commons-mapper.xml"/>
+		<mapper resource="com/sist/mapper/cart-mapper.xml"/>
+		<mapper resource="com/sist/mapper/servicecenter-mapper.xml"/>
+		<mapper resource="com/sist/mapper/food-reserve-mapper.xml"/>
+	</mappers>
+</configuration>

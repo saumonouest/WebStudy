@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.food-mapper">
+	<select id="foodHitTopData" resultType="FoodVO">
+		SELECT fno , name , poster , rownum 
+		FROM (SELECT fno , name , poster 
+				  FROM food_blue ORDER BY hit DESC )
+		WHERE rownum &lt;=12
+	</select> 
+	<select id="foodLikeTopData" resultType="FoodVO">
+		SELECT fno , name , poster , hit, tag, rownum 
+		FROM (SELECT fno , name , poster , hit ,tag
+				  FROM food_blue ORDER BY likecount DESC )
+		WHERE rownum &lt;=9
+	</select>
+	<select id="foodJjimTopData" resultType="FoodVO">
+		SELECT fno , name , poster , rownum 
+		FROM (SELECT fno , name , poster 
+				  FROM food_blue ORDER BY jjimcount DESC )
+		WHERE rownum &lt;=12
+	</select>
+	<select id="foodListCount" resultType="int">
+		SELECT COUNT(*) FROM food_blue
+	</select>
+	<!--  맛집 목록 출력 -->
+	<select id="foodListData" resultType="FoodVO" parameterType="hashmap">
+		SELECT fno , name , poster , hit ,num
+		FROM (SELECT fno , name , poster , hit , rownum as num 
+				  FROM (SELECT /*+ INDEX_ASC(food_blue fb_no_PK)*/ fno , name , poster ,hit 
+				  		    FROM food_blue ))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	<select id="foodTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/20.0) FROM food_blue
+	</select>
+	<select id="foodAListData" resultType="FoodVO" parameterType="hashmap">
+		SELECT fno , name , poster , score ,num
+		FROM (SELECT fno , name , poster , score , rownum as num 
+				  FROM (SELECT /*+ INDEX_ASC(food_house FOOD_HOUSE_PK)*/ fno , name , poster ,score 
+				  		    FROM food_house ))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	<select id="foodATotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/20.0) FROM food_house
+	</select>
+	<!--  맛집 상세보기 -->
+	<update id="foodHitIncrement" parameterType="int">
+		UPDATE food_blue SET
+		hit = hit+1
+		WHERE fno = #{fno}
+	</update>
+	<select id="foodDetailData" resultType="FoodVO" parameterType="int">
+		SELECT fno , name , tag , phone , address , menu , theme , poster , images , time , parking , review
+		FROM food_blue
+		WHERE fno = #{fno}
+	</select>
+	<!--  좋아요 -->
+	<!--  찜 -->
+	<!--  예약 -->
+	<!--  댓글 -->
+	<!--  인근 맛집 출력 -->
+	<select id="foodRearListData" resultType="FoodVO" parameterType="string">
+		SELECT fno , name , poster , address , hit, rownum 
+		FROM (SELECT fno , name , poster ,address, hit
+				  FROM food_blue WHERE address LIKE '%'||#{ss}||'%'  ORDER BY fno ASC)
+		WHERE rownum &lt;=12
+	</select>
+	<!--  맛집 찾기 -->
+	
+	
+	<select id="foodFindListData" resultType="FoodVO" parameterType="hashmap">
+		SELECT fno,name,poster, hit, num
+		FROM (SELECT fno,name,poster,hit, rownum as num
+		FROM (SELECT fno,name,poster, hit
+		FROM food_blue
+		WHERE address LIKE '%'||#{ss}||'%'))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	
+	
+  <select id="foodFindTotalPage" resultType="int">
+    SELECT CEIL(COUNT(*)/20.0) FROM food_blue
+    WHERE address LIKE '%'||#{ss}||'%'
+  </select>
+  <!-- 예약 관련 -->
+  <select id="foodTypeAllData" resultType="FoodVO" parameterType="string">
+    SELECT fno,poster,name,phone 
+    FROM food_blue
+    WHERE theme LIKE '%'||#{theme}||'%'
+    ORDER BY fno ASC
+  </select>
+
+</mapper>

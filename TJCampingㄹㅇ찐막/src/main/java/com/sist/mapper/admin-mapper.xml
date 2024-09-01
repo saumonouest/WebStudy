@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.admin-mapper">
+<select id="boycheck" resultType="int">
+	select count(*) from member where sex='남자'
+</select>
+<select id="girlcheck" resultType="int">
+	select count(*) from member where sex='여자'
+</select>
+<select id="totalcheck" resultType="int">
+	select count(*) from member 
+</select>
+<resultMap type="com.sist.vo.CartVO" id="memberMap">
+	<result property="gvo.name" column="name"/>
+	<result property="gvo.poster" column="poster"/>
+</resultMap>
+<select id="buynameList" resultMap="memberMap" parameterType="hashmap">
+<!--  	select id,g.name as name,c.price,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,poster,account
+	from cart c , camp_goods_all g
+	where c.gno=g.cno
+	order by regdate desc -->
+	select id,name,poster,price,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,account,num
+	from (select id,name,poster,price,regdate,account, rownum as num 
+	      from (select id,g.name as name,poster,c.price as price,c.regdate as regdate,account
+	            from cart c , camp_goods_all g
+				where c.gno=g.cno
+				order by regdate desc))
+	where num BETWEEN #{start} AND #{end}
+</select>
+<!-- 마이페이지 구매목록 카운트 -->
+<!-- 
+	select count(*) from reserve where id='sim' and buyok='y';
+	select count(*) from cart where id='juhee' and isbuy ='y';
+ -->
+ <select id="campcount" resultType="int" parameterType="string">
+ 	select count(*) from cart where id=#{id} and isbuy='y' and campno is not null
+ </select>
+ <select id="goodscount" resultType="int" parameterType="string">
+ 	select count(*) from cart where id=#{id} and isbuy ='y' and gno is not null
+ </select>
+ 
+</mapper>
